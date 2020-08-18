@@ -2,11 +2,12 @@
 
 S3method(print,summary.CURobustML)
 S3method(summary,CURobustML)
+export(CUClusterML.setup)
 export(DD)
 export(DDPRcomb)
 export(DDcomb)
 export(DR)
-export(DRcomb)
+export(DRPRcomb)
 export(overlap)
 importFrom(AER,ivreg)
 importFrom(WeightIt,make_full_rank)

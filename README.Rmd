@@ -33,11 +33,17 @@ You can install the released version of CURobustML from [CRAN](https://CRAN.R-pr
 install.packages("CURobustML")
 ```
 
-You should also start and connect to H2O instance via package h2o to implement CURobustML.
+You should also start and connect to H2O instance via package h2o to implement CURobustML. 
 
 ```{r,  eval=F}
 library(h2o)
 localH2O = h2o.init()
+```
+
+Or, use the setup function.
+
+```{r,  eval=F}
+CUClusterML.setup()
 ```
 
 
@@ -45,7 +51,7 @@ localH2O = h2o.init()
 
 - The doubly robust estimator with proxy regression with two-level data
 
-```{r twoexample}
+```{r twoexample,  eval=F}
 library(CURobustML)
 
 DRcomb.rslt <- DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
@@ -68,7 +74,7 @@ DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats
 
 - The double demeaning estimator with cross-classified data
 
-```{r crossexample}
+```{r crossexample,  eval=F}
 DDcomb.rslt <- DDcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
                       X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")],
                       ID=crossclassified_data$f12id, data=crossclassified_data)

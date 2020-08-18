@@ -13,11 +13,11 @@ DR(Y, Z, interZ = formula(~1), Z.hat, Y1.hat, Y0.hat, data)
 
 \item{interZ}{formula that contains the variables that "interact"  with the treatment. "1" will be always added. The default is no interaction, i.e., formula = formula(~1).}
 
-\item{Z.hat}{treatment/propensity score prediction from \code{\link{DRcomb}}}
+\item{Z.hat}{treatment/propensity score prediction from \code{\link{DRPRcomb}}}
 
-\item{Y1.hat}{outcome prediction among treated units from \code{\link{DRcomb}}}
+\item{Y1.hat}{outcome prediction among treated units from \code{\link{DRPRcomb}}}
 
-\item{Y0.hat}{outcome prediction among untreated units from \code{\link{DRcomb}}}
+\item{Y0.hat}{outcome prediction among untreated units from \code{\link{DRPRcomb}}}
 
 \item{data}{dataframe containing the variables in the model}
 }
@@ -29,21 +29,21 @@ Doubly robust estimator
 }
 \examples{
 \dontrun{
-DRcomb.rslt <- DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 
 # with final predictions
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hat,
- Y1.hat=DRcomb.rslt$Y1.hat, Y0.hat=DRcomb.rslt$Y0.hat, data=twolevel_data)
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hat,
+ Y1.hat=DRPRcomb.rslt$Y1.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 
 # with predictions from ensemble glm
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_glm,
- Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_glm,
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm,
+ Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
  data=twolevel_data)
 
 # with predictions from deep learning
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_dl,
- Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_dl,
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl,
+ Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
  data=twolevel_data)
 }
 }

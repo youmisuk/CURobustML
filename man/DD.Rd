@@ -15,9 +15,9 @@ DD(Y, Z, interZ = formula(~1), ID, Z.hat, Y0.hat, data)
 
 \item{ID}{cluster identifier}
 
-\item{Z.hat}{treatment prediction from \code{\link{DDcomb}}, \code{\link{DRcomb}}, or \code{\link{DDPRcomb}}}
+\item{Z.hat}{treatment prediction from \code{\link{DDcomb}}, \code{\link{DRPRcomb}}, or \code{\link{DDPRcomb}}}
 
-\item{Y0.hat}{outcome prediction among untreated units from \code{\link{DDcomb}}, \code{\link{DRcomb}}, or \code{\link{DDPRcomb}}}
+\item{Y0.hat}{outcome prediction among untreated units from \code{\link{DDcomb}}, \code{\link{DRPRcomb}}, or \code{\link{DDPRcomb}}}
 
 \item{data}{dataframe containing the variables in the model}
 }
@@ -31,7 +31,7 @@ Double demeaning estimator
 \dontrun{
 DDcomb.rslt <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
-DRcomb.rslt <- DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
@@ -40,7 +40,7 @@ DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDcomb.rslt$Z.hat, Y0.hat=DDcomb.rslt$Y0.hat, data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DRcomb.rslt$Z.hat, Y0.hat=DRcomb.rslt$Y0.hat, data=twolevel_data)
+ Z.hat=DRPRcomb.rslt$Z.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
 
@@ -49,7 +49,7 @@ DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_glm,
+ Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm,
@@ -60,7 +60,7 @@ DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_dl,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_dl,
+ Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_dl,

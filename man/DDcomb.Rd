@@ -39,7 +39,16 @@ DDcomb(
 \item{mCrossFit}{number of cross fitting. The default is FALSE, and currently it is not available.}
 }
 \value{
-the weights/coefficients of ensemble learners, estimates and standard errors, treatment predictions, and outcome predictions
+An \code{DDcomb} with the following elements:
+   \item{coef.ER}{vector of the coefficients for prediction algorithms in the demeaned treatment model}
+   \item{coef.OR}{vector of the coefficients for prediction algorithms in the demeaned outcome model}
+   \item{Estimate}{estimates and standard errors of treatment effects}
+   \item{Z.hat}{final weighted prediction for the demeaned treatment}
+   \item{Y1.hat}{final weighted prediction for the demeaned outcome among treated units}
+   \item{Y0.hat}{final weighted prediction for the demeaned outcome among control units}
+   \item{Z.hats}{all the predictions for the demeaned treatment from prediction algorithms}
+   \item{Y1.hats}{all the predictions for the demeaned outcome among treated units from prediction algorithms}
+   \item{Y0.hats}{all the predictions for the demeaned outcome among control units from prediction algorithms}
 }
 \description{
 Double demeaning estimator with treatment and outcome learners

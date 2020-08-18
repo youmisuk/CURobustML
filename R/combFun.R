@@ -12,7 +12,22 @@
 #' @param K number of folds. The default is 5, and currently it is not available.
 #' @param mCrossFit number of cross fitting. The default is FALSE, and currently it is not available.
 #'
-#' @return the weights/coefficients of ensemble learners, estimates and standard errors, treatment predictions, and outcome predictions
+#' @return
+#' An \code{DRPRcomb} with the following elements:
+#'    \item{glm.coef.ER}{vector of the coefficients for ensemble genearlized linear models in the treatment model}
+#'    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
+#'    \item{glm.coef.OR}{vector of the coefficients for ensemble genearlized linear models in the outcome model}
+#'    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
+#'    \item{Estimate}{estimates and standard errors of treatment effects}
+#'    \item{Z.hat}{final weighted prediction for the treatment}
+#'    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
+#'    \item{Y0.hat}{final weighted prediction for the outcome among control units}
+#'    \item{Z.hats_glm}{all the prediction for the treatment from ensemble genearlized linear models}
+#'    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
+#'    \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble genearlized linear models}
+#'    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
+#'    \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble genearlized linear models}
+#'    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 #' @export
 #'
 #' @importFrom nnls nnls
@@ -23,16 +38,16 @@
 #' @examples
 #' \dontrun{
 #' # with two-level data
-#' DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+#' DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
 #' # with cross-classified data
-#' DRcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
+#' DRPRcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
 #'  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
 #'  data=crossclassified_data)
 #' }
-DRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deeplearning"), crossFitting=FALSE,
-                   K = 5, mCrossFit = 100) {
+DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deeplearning"), crossFitting=FALSE,
+                     K = 5, mCrossFit = 100) {
 
   if(length(library) != sum(library %in% c("glm", "deeplearning", "gbm", "randomForests"))) {
     stop("library is not in the appropriate format. Choose methods among glm, gbm, randomForests, and deeplearning.")
@@ -42,9 +57,14 @@ DRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
     stop("Cross fitting has not yet been implemented.")
   }
 
+  if(!crossFitting) {
+    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
+    mCrossFit = 1; K = 1
+  }
+
   # variables
-  IDnum = as.numeric(ID)
   IDfactor = as.factor(ID)
+  IDnum = as.numeric(IDfactor)
   Zfactor = as.factor(Z)
   Z = as.numeric(as.character(Z))
 
@@ -56,11 +76,6 @@ DRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 
   X_lvl1_num_sq <- X_lvl1_num^2
   colnames(X_lvl1_num_sq) <- paste0(colnames(X_lvl1_num_sq), "_sq")
-
-  if(!crossFitting) {
-    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
-    mCrossFit = 1; K = 1
-  }
 
   # datasets for the propensity scores
   h2oDataE= as.h2o(data.frame(Zfactor, X_lvl1, W_lvl2, IDfactor, X_lvl1_num_sq))
@@ -378,7 +393,17 @@ DRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 #' @param K number of folds. The default is 5, and currently it is not available.
 #' @param mCrossFit number of cross fitting. The default is FALSE, and currently it is not available.
 #'
-#' @return the weights/coefficients of ensemble learners, estimates and standard errors, treatment predictions, and outcome predictions
+#' @return
+#' An \code{DDcomb} with the following elements:
+#'    \item{coef.ER}{vector of the coefficients for prediction algorithms in the demeaned treatment model}
+#'    \item{coef.OR}{vector of the coefficients for prediction algorithms in the demeaned outcome model}
+#'    \item{Estimate}{estimates and standard errors of treatment effects}
+#'    \item{Z.hat}{final weighted prediction for the demeaned treatment}
+#'    \item{Y1.hat}{final weighted prediction for the demeaned outcome among treated units}
+#'    \item{Y0.hat}{final weighted prediction for the demeaned outcome among control units}
+#'    \item{Z.hats}{all the predictions for the demeaned treatment from prediction algorithms}
+#'    \item{Y1.hats}{all the predictions for the demeaned outcome among treated units from prediction algorithms}
+#'    \item{Y0.hats}{all the predictions for the demeaned outcome among control units from prediction algorithms}
 #' @export
 #'
 #' @importFrom nnls nnls
@@ -399,16 +424,21 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
                    K = 5, mCrossFit = 100) {
 
   if(length(library) != sum(library %in% c("glm", "deeplearning", "gbm", "randomForests"))) {
-    stop("library is not in the appropriate format. Choose methods among glm, deeplearning, gbm, and randomForests.")
+    stop("library is not in the appropriate format. Choose methods among glm, gbm, randomForests, and deeplearning.")
   }
 
   if (crossFitting) {
     stop("Cross fitting has not yet been implemented.")
   }
 
+  if(!crossFitting) {
+    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
+    mCrossFit = 1; K = 1
+  }
+
   # variables
-  IDnum = as.numeric(ID)
   IDfactor = as.factor(ID)
+  IDnum = as.numeric(IDfactor)
 
   # group deviation & group mean
   Y_demeaned = Y - ave(Y,IDnum )
@@ -425,15 +455,10 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
   X_lvl1_mean <- apply(as.matrix(X)[, !lvl2var], 2, function(y) ave(y, IDnum))
   W_lvl2 <- as.matrix(X)[, lvl2var]
 
-  if(!crossFitting) {
-    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
-    mCrossFit = 1; K = 1
-  }
-
   # datasets
   h2oDataE = as.h2o(data.frame(Z_demeaned,X_demeaned_lvl1, X_lvl1_mean, W_lvl2, X_demeaned_lvl1_num^2))
 
-  h2oAll = as.h2o(data.frame(Y_demeaned,Z_demeaned,Z_mean,X_demeaned_lvl1, X_lvl1_mean, W_lvl2, X_demeaned_lvl1_num^2))
+  h2oAll = as.h2o(data.frame(Y_demeaned,Z_demeaned,X_demeaned_lvl1, X_lvl1_mean, W_lvl2, X_demeaned_lvl1_num^2))
   h2oAll_Z1 = h2oAll_Z0 = h2oAll
   h2oAll_Z1$Z_demeaned = as.h2o(rep(1,length(Y_demeaned)) - ave(Z,IDnum)); h2oAll_Z0$Z_demeaned = as.h2o(rep(0,length(Y_demeaned)) - ave(Z,IDnum))
 
@@ -638,7 +663,23 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 #' @param K number of folds. The default is 5, and currently it is not available.
 #' @param mCrossFit number of cross fitting. The default is FALSE, and currently it is not available.
 #'
-#' @return the weights/coefficients of ensemble learners, estimates and standard errors, treatment predictions, and outcome predictions
+#' @return
+#' An \code{DDPRcomb} with the following elements:
+#'    \item{glm.coef.ER}{vector of the coefficients for ensemble genearlized linear models in the treatment model}
+#'    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
+#'    \item{glm.coef.OR}{vector of the coefficients for ensemble genearlized linear models in the outcome model}
+#'    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
+#'    \item{Estimate}{estimates and standard errors of treatment effects}
+#'    \item{Z.hat}{final weighted prediction for the treatment}
+#'    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
+#'    \item{Y0.hat}{final weighted prediction for the outcome among control units}
+#'    \item{Z.hats_glm}{all the prediction for the treatment from ensemble genearlized linear models}
+#'    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
+#'    \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble genearlized linear models}
+#'    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
+#'    \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble genearlized linear models}
+#'    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
+#'
 #' @export
 #'
 #' @importFrom nnls nnls
@@ -668,9 +709,14 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
     stop("Cross fitting has not yet been implemented.")
   }
 
+  if(!crossFitting) {
+    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
+    mCrossFit = 1; K = 1
+  }
+
   # variables
-  IDnum = as.numeric(ID)
   IDfactor = as.factor(ID)
+  IDnum = as.numeric(IDfactor)
   Zfactor = as.factor(Z)
   Z = as.numeric(as.character(Z))
 
@@ -682,11 +728,6 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 
   X_lvl1_num_sq <- X_lvl1_num^2
   colnames(X_lvl1_num_sq) <- paste0(colnames(X_lvl1_num_sq), "_sq")
-
-  if(!crossFitting) {
-    print("No crossFitting declared. Overriding mCrossfit and K variables to 1 both.")
-    mCrossFit = 1; K = 1
-  }
 
   # datasets for the propensity scores
   h2oDataE= as.h2o(data.frame(Zfactor, X_lvl1, W_lvl2, IDfactor, X_lvl1_num_sq))
@@ -781,7 +822,7 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
           fitER_glm_2 = h2o.glm(x=2:ncol(h2oDataE2Train),y=1,training_frame=h2oDataE2Train,alpha=1,lambda=0,family="binomial")
         }
 
-        fitER_glm_3 = lme4::glmer(glmerFrml, family=binomial(), data=REdataETrain, control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5), calc.derivs = FALSE), nAGQ = 0)
+        fitER_glm_3 = glmer(glmerFrml, family=binomial(), data=REdataETrain, control=glmerControl(optimizer="bobyqa",optCtrl=list(maxfun=2e5), calc.derivs = FALSE), nAGQ = 0)
 
         Ztrain.hat_glm_1 = as.numeric(as.data.frame(predict(fitER_glm_1,h2oDataETrain)[,"p1"])$p1)
         Ztrain.hat_glm_2 = as.numeric(as.data.frame(predict(fitER_glm_2,h2oDataE2Train)[,"p1"])$p1)
@@ -998,30 +1039,30 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #' @param Z binary treatment indicator, 1 - treatment, 0 - control
 #' @param interZ formula that contains the variables that "interact"  with the treatment. "1" will be always added. The default is no interaction, i.e., formula = formula(~1).
 #' @param data dataframe containing the variables in the model
-#' @param Z.hat treatment/propensity score prediction from \code{\link{DRcomb}}
-#' @param Y1.hat outcome prediction among treated units from \code{\link{DRcomb}}
-#' @param Y0.hat outcome prediction among untreated units from \code{\link{DRcomb}}
+#' @param Z.hat treatment/propensity score prediction from \code{\link{DRPRcomb}}
+#' @param Y1.hat outcome prediction among treated units from \code{\link{DRPRcomb}}
+#' @param Y0.hat outcome prediction among untreated units from \code{\link{DRPRcomb}}
 #'
 #' @return estimates and standard errors
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' DRcomb.rslt <- DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+#' DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
 #' # with final predictions
-#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hat,
-#'  Y1.hat=DRcomb.rslt$Y1.hat, Y0.hat=DRcomb.rslt$Y0.hat, data=twolevel_data)
+#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hat,
+#'  Y1.hat=DRPRcomb.rslt$Y1.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 #'
 #' # with predictions from ensemble glm
-#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_glm,
-#'  Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_glm,
+#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm,
+#'  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
 #'  data=twolevel_data)
 #'
 #' # with predictions from deep learning
-#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_dl,
-#'  Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_dl,
+#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl,
+#'  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
 #'  data=twolevel_data)
 #' }
 DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
@@ -1049,8 +1090,8 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' @param interZ formula that contains the variables that "interact"  with the treatment. "1" will be always added. The default is no interaction, i.e., formula = formula(~1).
 #' @param ID cluster identifier
 #' @param data dataframe containing the variables in the model
-#' @param Z.hat treatment prediction from \code{\link{DDcomb}}, \code{\link{DRcomb}}, or \code{\link{DDPRcomb}}
-#' @param Y0.hat outcome prediction among untreated units from \code{\link{DDcomb}}, \code{\link{DRcomb}}, or \code{\link{DDPRcomb}}
+#' @param Z.hat treatment prediction from \code{\link{DDcomb}}, \code{\link{DRPRcomb}}, or \code{\link{DDPRcomb}}
+#' @param Y0.hat outcome prediction among untreated units from \code{\link{DDcomb}}, \code{\link{DRPRcomb}}, or \code{\link{DDPRcomb}}
 #'
 #' @return estimates and standard errors
 #' @export
@@ -1060,7 +1101,7 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' \dontrun{
 #' DDcomb.rslt <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
-#' DRcomb.rslt <- DRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+#' DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #' DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
@@ -1069,7 +1110,7 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDcomb.rslt$Z.hat, Y0.hat=DDcomb.rslt$Y0.hat, data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRcomb.rslt$Z.hat, Y0.hat=DRcomb.rslt$Y0.hat, data=twolevel_data)
+#'  Z.hat=DRPRcomb.rslt$Z.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
 #'
@@ -1078,7 +1119,7 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #'  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_glm,
+#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm,
@@ -1089,7 +1130,7 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #'  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_dl,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_dl,
+#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_dl,
@@ -1174,6 +1215,27 @@ print.summary.CURobustML <-
 
   }
 
+
+#' @title Setup function
+#'
+#' @description setup function to implement CURobustML
+#'
+#' @param ... additional arguments ...
+#'
+#' @return
+#' @export
+#'
+#' @examples
+#' \dontrun{
+#' CUClusterML.setup()
+#' }
+CUClusterML.setup <- function(...) {
+
+  localH2O = h2o.init(...)
+  h2o.removeAll()
+  h2o.no_progress()
+
+}
 
 #' @title Overlap plot
 #'
