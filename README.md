@@ -7,6 +7,8 @@
 
 [![Travis build
 status](https://travis-ci.com/youmisuk/CURobustML.svg?branch=master)](https://travis-ci.com/youmisuk/CURobustML)
+[![AppVeyor build
+status](https://ci.appveyor.com/api/projects/status/github/youmisuk/CURobustML?branch=master&svg=true)](https://ci.appveyor.com/project/youmisuk/CURobustML)
 <!-- badges: end -->
 
 A family of machine learning estimators for handling unmeasured

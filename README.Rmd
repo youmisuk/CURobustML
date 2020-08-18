@@ -22,6 +22,7 @@ h2o.no_progress() # without progress bar
 
 <!-- badges: start -->
 [![Travis build status](https://travis-ci.com/youmisuk/CURobustML.svg?branch=master)](https://travis-ci.com/youmisuk/CURobustML)
+[![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/youmisuk/CURobustML?branch=master&svg=true)](https://ci.appveyor.com/project/youmisuk/CURobustML)
 <!-- badges: end -->
 
 A family of machine learning estimators for handling unmeasured cluster-level confounders in R. It provides a general approach to estimate causal effects in the presence of cluster-level unmeasured confounders in multilevel observational data. In particular, we leverage modern ML methods and exploit a fundamental nature regarding cluster-level unmeasured confounders to estimate the conditional average treatment effect (CATE) and the average treatment effect (ATE).
