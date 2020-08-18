@@ -2,7 +2,7 @@
 
 S3method(print,summary.CURobustML)
 S3method(summary,CURobustML)
-export(CUClusterML.setup)
+export(CURobustML.setup)
 export(DD)
 export(DDPRcomb)
 export(DDcomb)

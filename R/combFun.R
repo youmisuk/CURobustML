@@ -1227,9 +1227,9 @@ print.summary.CURobustML <-
 #'
 #' @examples
 #' \dontrun{
-#' CUClusterML.setup()
+#' CURobustML.setup()
 #' }
-CUClusterML.setup <- function(...) {
+CURobustML.setup <- function(...) {
 
   localH2O = h2o.init(...)
   h2o.removeAll()

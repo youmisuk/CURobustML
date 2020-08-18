@@ -46,7 +46,7 @@ localH2O = h2o.init()
 Or, use the setup function.
 
 ```{r,  eval=F}
-CUClusterML.setup()
+CURobustML.setup()
 ```
 
 
