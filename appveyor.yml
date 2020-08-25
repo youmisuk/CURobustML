@@ -17,6 +17,7 @@ environment:
   global:
     R_REMOTES_STANDALONE: true
     WARNINGS_ARE_ERRORS: 1
+    USE_RTOOLS: true
 
   matrix:
 
@@ -28,8 +29,10 @@ environment:
     R_ARCH: x64
 
   - R_VERSION: stable
+    R_ARCH: x64
 
   - R_VERSION: patched
+    R_ARCH: x64
 
 matrix:
   fast_finish: true
