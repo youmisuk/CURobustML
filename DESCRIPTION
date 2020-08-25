@@ -20,7 +20,8 @@ LazyData: true
 RoxygenNote: 7.1.1
 Suggests:
     bit64,
-    covr
+    covr,
+    testthat
 Imports:
     lme4,
     nnls,
