@@ -20,9 +20,6 @@
 
 \item{...}{additional arguments ...}
 }
-\value{
-
-}
 \description{
 Print a coefficient table
 }

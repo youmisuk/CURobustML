@@ -29,6 +29,6 @@ Imports:
     AER
 Depends:
     h2o,
-    R (>= 2.10)
+    R (>= 3.6)
 URL: https://github.com/youmisuk/CURobustML
 BugReports: https://github.com/youmisuk/CURobustML/issues

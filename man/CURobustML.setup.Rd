@@ -9,9 +9,6 @@ CURobustML.setup(...)
 \arguments{
 \item{...}{additional arguments ...}
 }
-\value{
-
-}
 \description{
 setup function to implement CURobustML
 }

@@ -30,11 +30,13 @@
 #'    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 #' @export
 #'
+#' @importFrom stats formula median model.matrix binomial predict
 #' @importFrom nnls nnls
 #' @importFrom caret createFolds
 #' @importFrom WeightIt make_full_rank
 #' @importFrom lme4 glmer lmer glmerControl lmerControl
 #' @importFrom h2o as.h2o h2o.glm h2o.gbm h2o.deeplearning h2o.randomForest
+#'
 #' @examples
 #' \dontrun{
 #' # with two-level data
@@ -406,6 +408,7 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #'    \item{Y0.hats}{all the predictions for the demeaned outcome among control units from prediction algorithms}
 #' @export
 #'
+#' @importFrom stats ave formula median model.matrix predict
 #' @importFrom nnls nnls
 #' @importFrom caret createFolds
 #' @importFrom h2o as.h2o h2o.glm h2o.gbm h2o.deeplearning h2o.randomForest
@@ -682,6 +685,7 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 #'
 #' @export
 #'
+#' @importFrom stats ave formula median model.matrix predict
 #' @importFrom nnls nnls
 #' @importFrom caret createFolds
 #' @importFrom WeightIt make_full_rank
@@ -1046,6 +1050,7 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #' @return estimates and standard errors
 #' @export
 #'
+#' @importFrom stats  model.matrix coef vcov lm
 #' @examples
 #' \dontrun{
 #' DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
@@ -1096,6 +1101,7 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' @return estimates and standard errors
 #' @export
 #'
+#' @importFrom stats ave model.matrix
 #' @importFrom AER ivreg
 #' @examples
 #' \dontrun{
@@ -1171,7 +1177,8 @@ DD <- function(Y, Z, interZ=formula(~1),ID, Z.hat, Y0.hat, data) {
 #' @param object object of class \code{CURobustML}.
 #' @param digits integer indicating the number of decimal places
 #' @param ... additional arguments ...
-#' @return
+#'
+#' @importFrom stats pnorm
 #' @export
 #'
 summary.CURobustML <-
@@ -1202,7 +1209,7 @@ summary.CURobustML <-
 #' @param signif.stars whether to add significant starts
 #' @param ... additional arguments ...
 #'
-#' @return
+#' @importFrom stats printCoefmat
 #' @export
 #'
 print.summary.CURobustML <-
@@ -1221,10 +1228,9 @@ print.summary.CURobustML <-
 #' @description setup function to implement CURobustML
 #'
 #' @param ... additional arguments ...
-#'
-#' @return
 #' @export
 #'
+#' @importFrom h2o h2o.init h2o.removeAll h2o.no_progress
 #' @examples
 #' \dontrun{
 #' CURobustML.setup()
@@ -1249,6 +1255,7 @@ CURobustML.setup <- function(...) {
 #' @return overlap plot between treated units and control units
 #' @export
 #'
+#' @importFrom graphics axis hist par plot text
 #' @examples
 #' overlap(X=twolevel_data$lps, Z=twolevel_data$Z)
 overlap <- function(X, Z, bin = 20, ...) {

@@ -13,9 +13,6 @@
 
 \item{...}{additional arguments ...}
 }
-\value{
-
-}
 \description{
 coefficient table containing estimates, standard errors, z-value, and p-value. If exists, bootstrap standard errors are used by default.
 }
