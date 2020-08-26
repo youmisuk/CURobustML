@@ -14,11 +14,6 @@ r:
  - release
  - devel
 
-matrix:
-  exclude:
-    - r: devel
-      os: osx
-
 after_success:
  - Rscript -e 'covr::codecov(type = "all")'
 
