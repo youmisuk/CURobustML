@@ -18,8 +18,7 @@ License: GPL-3
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests:
-    bit64,
-    covr
+    bit64
 Imports:
     lme4,
     nnls,
