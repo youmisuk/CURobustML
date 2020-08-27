@@ -40,19 +40,19 @@ DDPRcomb(
 }
 \value{
 An \code{DDPRcomb} with the following elements:
-   \item{glm.coef.ER}{vector of the coefficients for ensemble genearlized linear models in the treatment model}
+   \item{glm.coef.ER}{vector of the coefficients for ensemble generalized linear models in the treatment model}
    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
-   \item{glm.coef.OR}{vector of the coefficients for ensemble genearlized linear models in the outcome model}
+   \item{glm.coef.OR}{vector of the coefficients for ensemble generalized linear models in the outcome model}
    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
    \item{Estimate}{estimates and standard errors of treatment effects}
    \item{Z.hat}{final weighted prediction for the treatment}
    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
    \item{Y0.hat}{final weighted prediction for the outcome among control units}
-   \item{Z.hats_glm}{all the prediction for the treatment from ensemble genearlized linear models}
+   \item{Z.hats_glm}{all the prediction for the treatment from ensemble generalized linear models}
    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
-   \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble genearlized linear models}
+   \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble generalized linear models}
    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
-   \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble genearlized linear models}
+   \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble generalized linear models}
    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 }
 \description{

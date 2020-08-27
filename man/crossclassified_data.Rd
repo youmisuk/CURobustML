@@ -10,14 +10,14 @@ Sample data contains:
    \item{f1id}{factor-1 cluster (e.g., school) identifier}
    \item{f1id}{factor-2 cluster (e.g., neighborhood) identifier}
    \item{f12id}{combined factor-12 cluster (e.g., interaction of school and neighborhood) identifier}
-   \item{Y}{continusous outcome}
+   \item{Y}{continuous outcome}
    \item{Z}{binary treatment (1=treated, 0=control)}
    \item{X1}{first individual-level confounder}
    \item{X2}{second individual-level confounder}
    \item{X3}{third individual-level confounder}
    \item{W1}{first factor-1 confounder (e.g., school climate)}
    \item{W2}{second factor-1 confounder, considered as omitted/measured}
-   \item{Q1}{first factor-2 confounder (e.g., perceived negiborhood safety)}
+   \item{Q1}{first factor-2 confounder (e.g., perceived neighborhood safety)}
    \item{Q2}{second factor-2 confounder, considered as omitted/measured}
    \item{lps}{true propensity score logit}
    \item{ps}{true propensity score}

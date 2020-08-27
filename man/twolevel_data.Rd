@@ -8,7 +8,7 @@
 Sample data contains:
  \describe{
    \item{id}{cluster (e.g., school) identifier}
-   \item{Y}{continusous outcome}
+   \item{Y}{continuous outcome}
    \item{Z}{binary treatment (1=treated, 0=control)}
    \item{X1}{first individual-level confounder}
    \item{X2}{second individual-level confounder}
