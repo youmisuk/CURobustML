@@ -44,15 +44,15 @@ DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
 
-# with predictions from glm or ensemble glm
+# with predictions from glm
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
+ Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
  data=twolevel_data)
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm,
+ Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
  data=twolevel_data)
 
 # with predictions from deep learning

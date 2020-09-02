@@ -1,6 +1,6 @@
 Package: CURobustML
 Type: Package
-Title: Machine Learning Estimators for handling unmeasured cluster-level confounders
+Title: Machine Learning Estimators for Handling Cluster-Level Unmeasured Confounders
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Youmi",
@@ -13,12 +13,13 @@ Authors@R:
            role = "aut",
            email = "hyunseung@stat.wisc.edu",
 	   comment = c(ORCID = "https://orcid.org/0000-0001-5748-2707")))    
-Description: A family of machine learning estimators for handling unmeasured cluster-level confounders in R. It provides a general approach to estimate causal effects in the presence of cluster-level unmeasured confounders in multi-level observational data. In particular, we leverage modern ML methods and exploit a fundamental nature regarding cluster-level unmeasured confounders to estimate the conditional average treatment effect (CATE) and the average treatment effect (ATE).
+Description: A family of machine learning estimators for handling cluster-level unmeasured confounders in R. It provides a general approach to estimate causal effects in the presence of cluster-level unmeasured confounders in multi-level observational data. In particular, we leverage modern ML methods and exploit a fundamental nature regarding cluster-level unmeasured confounders to estimate the conditional average treatment effect (CATE) and the average treatment effect (ATE).
 License: GPL-3
 LazyData: true
 RoxygenNote: 7.1.1
 Suggests:
-    bit64
+    bit64,
+    spelling
 Imports:
     lme4,
     nnls,
@@ -30,3 +31,4 @@ Depends:
     R (>= 3.6)
 URL: https://github.com/youmisuk/CURobustML
 BugReports: https://github.com/youmisuk/CURobustML/issues
+Language: en-US

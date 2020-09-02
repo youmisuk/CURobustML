@@ -58,16 +58,16 @@ DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 summary(DRPRcomb.rslt)
 
 # with final predictions
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hat,
-   Y1.hat=DRcomb.rslt$Y1.hat, Y0.hat=DRcomb.rslt$Y0.hat, data=twolevel_data)
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hat,
+   Y1.hat=DRPRcomb.rslt$Y1.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 
-# with predictions from ensemble glm
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_glm,
-   Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_glm, data=twolevel_data)
+# with predictions from glm wtih fixed effects of clusters
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1,
+   Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1, data=twolevel_data)
 
-# with predictions from deep learning
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRcomb.rslt$Z.hats$Ztest.hat_dl,
-   Y1.hat=DRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRcomb.rslt$Y0.hats$Y0test.hat_dl, data=twolevel_data)
+# with predictions from glm wtih random effects of clusters
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_3,
+   Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_3, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_3, data=twolevel_data)
 ```
 
   - The double demeaning estimator with cross-classified data

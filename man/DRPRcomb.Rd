@@ -30,7 +30,7 @@ DRPRcomb(
 
 \item{data}{dataframe containing the variables in the model}
 
-\item{library}{character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning.}
+\item{library}{character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning. Three types of glm include: glm with cluster dummies, glm with cluster-constant components of individual-level covariates, and glmm with random effects of clusters.}
 
 \item{crossFitting}{whether to do cross fitting. The default is FALSE, and currently it is not available.}
 
@@ -40,19 +40,14 @@ DRPRcomb(
 }
 \value{
 An \code{DRPRcomb} with the following elements:
-   \item{glm.coef.ER}{vector of the coefficients for ensemble generalized linear models in the treatment model}
    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
-   \item{glm.coef.OR}{vector of the coefficients for ensemble generalized linear models in the outcome model}
    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
    \item{Estimate}{estimates and standard errors of treatment effects}
    \item{Z.hat}{final weighted prediction for the treatment}
    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
    \item{Y0.hat}{final weighted prediction for the outcome among control units}
-   \item{Z.hats_glm}{all the prediction for the treatment from ensemble generalized linear models}
    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
-   \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble generalized linear models}
    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
-   \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble generalized linear models}
    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 }
 \description{

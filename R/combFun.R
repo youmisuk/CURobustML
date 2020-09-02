@@ -7,26 +7,21 @@
 #' @param interZ formula that contains the variables that "interact"  with the treatment. "1" will be always added. The default is no interaction, i.e., formula = formula(~1).
 #' @param ID cluster identifier
 #' @param data dataframe containing the variables in the model
-#' @param library character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning.
+#' @param library character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning. Three types of glm include: glm with cluster dummies, glm with cluster-constant components of individual-level covariates, and glmm with random effects of clusters.
 #' @param crossFitting whether to do cross fitting. The default is FALSE, and currently it is not available.
 #' @param K number of folds. The default is 5, and currently it is not available.
 #' @param mCrossFit number of cross fitting. The default is FALSE, and currently it is not available.
 #'
 #' @return
 #' An \code{DRPRcomb} with the following elements:
-#'    \item{glm.coef.ER}{vector of the coefficients for ensemble generalized linear models in the treatment model}
 #'    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
-#'    \item{glm.coef.OR}{vector of the coefficients for ensemble generalized linear models in the outcome model}
 #'    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
 #'    \item{Estimate}{estimates and standard errors of treatment effects}
 #'    \item{Z.hat}{final weighted prediction for the treatment}
 #'    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
 #'    \item{Y0.hat}{final weighted prediction for the outcome among control units}
-#'    \item{Z.hats_glm}{all the prediction for the treatment from ensemble generalized linear models}
 #'    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
-#'    \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble generalized linear models}
 #'    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
-#'    \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble generalized linear models}
 #'    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 #' @export
 #'
@@ -182,24 +177,6 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
         Ztest.hat_glm_2 = as.numeric(as.data.frame(predict(fitER_glm_2,h2oDataE2Test)[,"p1"])$p1)
         Ztest.hat_glm_3 = as.numeric(predict(fitER_glm_3, type="response", REdataETest))
 
-        Ztrain.hats_glm <- cbind(Ztrain.hat_glm_1, Ztrain.hat_glm_2, Ztrain.hat_glm_3)
-        Ztest.hats_glm <- cbind(Ztest.hat_glm_1, Ztest.hat_glm_2, Ztest.hat_glm_3)
-
-        # nnls
-        fit.nnlsER_glm <- nnls(A=Ztrain.hats_glm, b=Z)
-        initCoefER_glm <- coef(fit.nnlsER_glm)
-        initCoefER_glm[is.na(initCoefER_glm)] <- 0.0
-
-        # normalize so sum(coef) = 1 if possible
-        if (sum(initCoefER_glm) > 0) {
-          coefER_glm <- initCoefER_glm / sum(initCoefER_glm)
-        } else {
-          warning("All glm algorithms have zero weight", call. = FALSE)
-          coefER_glm <- initCoefER_glm
-        }
-
-        Ztrain.hat_glm <- as.numeric(crossprod(t(Ztrain.hats_glm[, coefER_glm != 0, drop = FALSE]), coefER_glm[coefER_glm != 0]))
-        Ztest.hat_glm <- as.numeric(crossprod(t(Ztest.hats_glm[, coefER_glm != 0, drop = FALSE]), coefER_glm[coefER_glm != 0]))
       }
 
       if ("deeplearning" %in% library) {
@@ -222,8 +199,8 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 
 
       # all predictions
-      Ztrain.hats <- cbind(Ztrain.hat_glm, Ztrain.hat_dl, Ztrain.hat_gbm, Ztrain.hat_rf)
-      Ztest.hats <- cbind(Ztest.hat_glm, Ztest.hat_dl, Ztest.hat_gbm, Ztest.hat_rf)
+      Ztrain.hats <- cbind(Ztrain.hat_glm_1, Ztrain.hat_glm_2, Ztrain.hat_glm_3, Ztrain.hat_dl, Ztrain.hat_gbm, Ztrain.hat_rf)
+      Ztest.hats <- cbind(Ztest.hat_glm_1, Ztest.hat_glm_2, Ztest.hat_glm_3, Ztest.hat_dl, Ztest.hat_gbm, Ztest.hat_rf)
 
       # nnls
       fit.nnlsER <- nnls(A=Ztrain.hats, b=Z)
@@ -268,27 +245,6 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
         Y0test.hat_glm_2 = as.numeric(as.data.frame(predict(fitOR_glm_2,h2oAll2Test_Z0)$pred)$predict)
         Y0test.hat_glm_3 = as.numeric(predict(fitOR_glm_3, REdataTest_Z0))
 
-        Ytrain.hats_glm <- cbind(Ytrain.hat_glm_1, Ytrain.hat_glm_2, Ytrain.hat_glm_3)
-
-        Y1test.hats_glm <- cbind(Y1test.hat_glm_1, Y1test.hat_glm_2, Y1test.hat_glm_3)
-        Y0test.hats_glm <- cbind(Y0test.hat_glm_1, Y0test.hat_glm_2, Y0test.hat_glm_3)
-
-        # nnls
-        fit.nnlsOR_glm <- nnls(A=Ytrain.hats_glm, b=Y)
-        initCoefOR_glm <- coef(fit.nnlsOR_glm)
-        initCoefOR_glm[is.na(initCoefOR_glm)] <- 0.0
-
-        # normalize so sum(coef) = 1 if possible
-        if (sum(initCoefOR_glm) > 0) {
-          coefOR_glm <- initCoefOR_glm / sum(initCoefOR_glm)
-        } else {
-          warning("All glm algorithms have zero weight", call. = FALSE)
-          coefOR_glm <- initCoefOR_glm
-        }
-
-        Ytrain.hat_glm <- as.numeric(crossprod(t(Ytrain.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
-        Y1test.hat_glm <- as.numeric(crossprod(t(Y1test.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
-        Y0test.hat_glm <- as.numeric(crossprod(t(Y0test.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
       }
 
       if ("deeplearning" %in% library) {
@@ -313,9 +269,9 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
       }
 
       # all predictions
-      Ytrain.hats <- cbind(Ytrain.hat_glm, Ytrain.hat_dl, Ytrain.hat_gbm, Ytrain.hat_rf)
-      Y1test.hats <- cbind(Y1test.hat_glm, Y1test.hat_dl, Y1test.hat_gbm, Y1test.hat_rf)
-      Y0test.hats <- cbind(Y0test.hat_glm, Y0test.hat_dl, Y0test.hat_gbm, Y0test.hat_rf)
+      Ytrain.hats <- cbind(Ytrain.hat_glm_1, Ytrain.hat_glm_2, Ytrain.hat_glm_3, Ytrain.hat_dl, Ytrain.hat_gbm, Ytrain.hat_rf)
+      Y1test.hats <- cbind(Y1test.hat_glm_1, Y1test.hat_glm_2, Y1test.hat_glm_3, Y1test.hat_dl, Y1test.hat_gbm, Y1test.hat_rf)
+      Y0test.hats <- cbind(Y0test.hat_glm_1, Y0test.hat_glm_2, Y0test.hat_glm_3, Y0test.hat_dl, Y0test.hat_gbm, Y0test.hat_rf)
 
       # nnls
       fit.nnlsOR <- nnls(A=Ytrain.hats, b=Y)
@@ -360,18 +316,15 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
   colnames(tau.est) <-  c("Estimate", "Std. Error")
   rownames(tau.est) <- colnames(interZ.mat)
 
-  Z.hats = cbind(Z.hat=Ztest.comb, Z.hat_glm=Ztest.hat_glm, Z.hat_dl=Ztest.hat_dl, Z.hat_gbm=Ztest.hat_gbm, Z.hat_rf=Ztest.hat_rf)
-  Y1.hats = cbind(Y1.hat=Y1test.comb, Y1.hat_glm=Y1test.hat_glm, Y1.hat_dl=Y1test.hat_dl, Y1.hat_gbm=Y1test.hat_gbm, Y1.hat_rf=Y1test.hat_rf)
-  Y0.hats = cbind(Y0.hat=Y0test.comb, Y0.hat_glm=Y0test.hat_glm, Y0.hat_dl=Y0test.hat_dl, Y0.hat_gbm=Y0test.hat_gbm, Y0.hat_rf=Y0test.hat_rf)
+  Z.hats = cbind(Z.hat=Ztest.comb, Ztest.hats)
+  Y1.hats = cbind(Y1.hat=Y1test.comb, Y1test.hats)
+  Y0.hats = cbind(Y0.hat=Y0test.comb, Y0test.hats)
 
   if (!crossFitting) {
-    ans <- list(glm.coef.ER=coefER_glm, coef.ER=coefER, glm.coef.OR=coefER_glm, coef.OR=coefOR,
+    ans <- list(coef.ER=coefER, coef.OR=coefOR,
                 Estimate=tau.est,
                 Z.hat = Ztest.comb,  Y1.hat = Y1test.comb, Y0.hat = Y0test.comb,
-                Z.hats_glm = data.frame(Ztest.hats_glm),
-                Z.hats = data.frame(Ztest.hats),
-                Y1.hats_glm = data.frame(Y1test.hats_glm), Y0.hats_glm = data.frame(Y0test.hats_glm),
-                Y1.hats = data.frame(Y1test.hats), Y0.hats = data.frame(Y0test.hats))
+                Z.hats = data.frame(Ztest.hats), Y1.hats = data.frame(Y1test.hats), Y0.hats = data.frame(Y0test.hats))
   } else {
     ans <- list(Estimate=tau.est)
   }
@@ -661,26 +614,21 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 #' @param interZ formula that contains the variables that "interact"  with the treatment. "1" will be always added. The default is no interaction, i.e., formula = formula(~1).
 #' @param ID cluster identifier
 #' @param data dataframe containing the variables in the model
-#' @param library character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning.
+#' @param library character vector of prediction algorithms. The available methods are  glm, deeplearning, gbm, and randomForests. The default methods are glm and deeplearning. Three types of glm include: glm with cluster dummies, glm with cluster-constant components of individual-level covariates, and glmm with random effects of clusters.
 #' @param crossFitting whether to do cross fitting. The default is FALSE, and currently it is not available.
 #' @param K number of folds. The default is 5, and currently it is not available.
 #' @param mCrossFit number of cross fitting. The default is FALSE, and currently it is not available.
 #'
 #' @return
 #' An \code{DDPRcomb} with the following elements:
-#'    \item{glm.coef.ER}{vector of the coefficients for ensemble generalized linear models in the treatment model}
 #'    \item{coef.ER}{vector of the coefficients for prediction algorithms in the treatment model}
-#'    \item{glm.coef.OR}{vector of the coefficients for ensemble generalized linear models in the outcome model}
 #'    \item{coef.OR}{vector of the coefficients for prediction algorithms in the outcome model}
 #'    \item{Estimate}{estimates and standard errors of treatment effects}
 #'    \item{Z.hat}{final weighted prediction for the treatment}
 #'    \item{Y1.hat}{final weighted prediction for the outcome among treated units}
 #'    \item{Y0.hat}{final weighted prediction for the outcome among control units}
-#'    \item{Z.hats_glm}{all the prediction for the treatment from ensemble generalized linear models}
 #'    \item{Z.hats}{all the predictions for the treatment from prediction algorithms}
-#'    \item{Y1.hats_glm}{all the prediction for the outcome among treated units from ensemble generalized linear models}
 #'    \item{Y1.hats}{all the predictions for the outcome among treated units from prediction algorithms}
-#'    \item{Y0.hats_glm}{all the prediction for the outcome among control units from ensemble generalized linear models}
 #'    \item{Y0.hats}{all the predictions for the outcome among control units from prediction algorithms}
 #'
 #' @export
@@ -836,24 +784,6 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
         Ztest.hat_glm_2 = as.numeric(as.data.frame(predict(fitER_glm_2,h2oDataE2Test)[,"p1"])$p1)
         Ztest.hat_glm_3 = as.numeric(predict(fitER_glm_3, type="response", REdataETest))
 
-        Ztrain.hats_glm <- cbind(Ztrain.hat_glm_1, Ztrain.hat_glm_2, Ztrain.hat_glm_3)
-        Ztest.hats_glm <- cbind(Ztest.hat_glm_1, Ztest.hat_glm_2, Ztest.hat_glm_3)
-
-        # nnls
-        fit.nnlsER_glm <- nnls(A=Ztrain.hats_glm, b=Z)
-        initCoefER_glm <- coef(fit.nnlsER_glm)
-        initCoefER_glm[is.na(initCoefER_glm)] <- 0.0
-
-        # normalize so sum(coef) = 1 if possible
-        if (sum(initCoefER_glm) > 0) {
-          coefER_glm <- initCoefER_glm / sum(initCoefER_glm)
-        } else {
-          warning("All glm algorithms have zero weight", call. = FALSE)
-          coefER_glm <- initCoefER_glm
-        }
-
-        Ztrain.hat_glm <- as.numeric(crossprod(t(Ztrain.hats_glm[, coefER_glm != 0, drop = FALSE]), coefER_glm[coefER_glm != 0]))
-        Ztest.hat_glm <- as.numeric(crossprod(t(Ztest.hats_glm[, coefER_glm != 0, drop = FALSE]), coefER_glm[coefER_glm != 0]))
       }
 
       if ("deeplearning" %in% library) {
@@ -876,8 +806,8 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 
 
       # all predictions
-      Ztrain.hats <- cbind(Ztrain.hat_glm, Ztrain.hat_dl, Ztrain.hat_gbm, Ztrain.hat_rf)
-      Ztest.hats <- cbind(Ztest.hat_glm, Ztest.hat_dl, Ztest.hat_gbm, Ztest.hat_rf)
+      Ztrain.hats <- cbind(Ztrain.hat_glm_1, Ztrain.hat_glm_2, Ztrain.hat_glm_3, Ztrain.hat_dl, Ztrain.hat_gbm, Ztrain.hat_rf)
+      Ztest.hats <- cbind(Ztest.hat_glm_1, Ztest.hat_glm_2, Ztest.hat_glm_3, Ztest.hat_dl, Ztest.hat_gbm, Ztest.hat_rf)
 
       # nnls
       fit.nnlsER <- nnls(A=Ztrain.hats, b=Z)
@@ -922,27 +852,6 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
         Y0test.hat_glm_2 = as.numeric(as.data.frame(predict(fitOR_glm_2,h2oAll2Test_Z0)$pred)$predict)
         Y0test.hat_glm_3 = as.numeric(predict(fitOR_glm_3, REdataTest_Z0))
 
-        Ytrain.hats_glm <- cbind(Ytrain.hat_glm_1, Ytrain.hat_glm_2, Ytrain.hat_glm_3)
-
-        Y1test.hats_glm <- cbind(Y1test.hat_glm_1, Y1test.hat_glm_2, Y1test.hat_glm_3)
-        Y0test.hats_glm <- cbind(Y0test.hat_glm_1, Y0test.hat_glm_2, Y0test.hat_glm_3)
-
-        # nnls
-        fit.nnlsOR_glm <- nnls(A=Ytrain.hats_glm, b=Y)
-        initCoefOR_glm <- coef(fit.nnlsOR_glm)
-        initCoefOR_glm[is.na(initCoefOR_glm)] <- 0.0
-
-        # normalize so sum(coef) = 1 if possible
-        if (sum(initCoefOR_glm) > 0) {
-          coefOR_glm <- initCoefOR_glm / sum(initCoefOR_glm)
-        } else {
-          warning("All glm algorithms have zero weight", call. = FALSE)
-          coefOR_glm <- initCoefOR_glm
-        }
-
-        Ytrain.hat_glm <- as.numeric(crossprod(t(Ytrain.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
-        Y1test.hat_glm <- as.numeric(crossprod(t(Y1test.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
-        Y0test.hat_glm <- as.numeric(crossprod(t(Y0test.hats_glm[, coefOR_glm != 0, drop = FALSE]), coefOR_glm[coefOR_glm != 0]))
       }
 
       if ("deeplearning" %in% library) {
@@ -967,9 +876,9 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
       }
 
       # all predictions
-      Ytrain.hats <- cbind(Ytrain.hat_glm, Ytrain.hat_dl, Ytrain.hat_gbm, Ytrain.hat_rf)
-      Y1test.hats <- cbind(Y1test.hat_glm, Y1test.hat_dl, Y1test.hat_gbm, Y1test.hat_rf)
-      Y0test.hats <- cbind(Y0test.hat_glm, Y0test.hat_dl, Y0test.hat_gbm, Y0test.hat_rf)
+      Ytrain.hats <- cbind(Ytrain.hat_glm_1, Ytrain.hat_glm_2, Ytrain.hat_glm_3, Ytrain.hat_dl, Ytrain.hat_gbm, Ytrain.hat_rf)
+      Y1test.hats <- cbind(Y1test.hat_glm_1, Y1test.hat_glm_2, Y1test.hat_glm_3, Y1test.hat_dl, Y1test.hat_gbm, Y1test.hat_rf)
+      Y0test.hats <- cbind(Y0test.hat_glm_1, Y0test.hat_glm_2, Y0test.hat_glm_3, Y0test.hat_dl, Y0test.hat_gbm, Y0test.hat_rf)
 
       # nnls
       fit.nnlsOR <- nnls(A=Ytrain.hats, b=Y)
@@ -996,8 +905,8 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
       IDnumtest <- IDnum[testIndex]
     }
 
-    estimates_DML2 = DD(Y=Yall,Z=Zall,interZ=interZ, data=dataALL, ID=IDnumtest,
-                        Z.hat=Zhatall, Y0.hat = Y0hatall)
+    estimates_DML2 = DD(Y=Yall,Z=Zall,interZ=interZ, data=dataALL,
+                        Z.hat=Zhatall, Y0.hat = Y0hatall, ID=IDnumtest)
     overallEst[m,] = as.numeric(estimates_DML2[,1])
     overallSE[m,] = as.numeric(estimates_DML2[,2])
 
@@ -1015,18 +924,15 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
   colnames(tau.est) <-  c("Estimate", "Std. Error")
   rownames(tau.est) <- colnames(interZ.mat)
 
-  Z.hats = cbind(Z.hat=Ztest.comb, Z.hat_glm=Ztest.hat_glm, Z.hat_dl=Ztest.hat_dl, Z.hat_gbm=Ztest.hat_gbm, Z.hat_rf=Ztest.hat_rf)
-  Y1.hats = cbind(Y1.hat=Y1test.comb, Y1.hat_glm=Y1test.hat_glm, Y1.hat_dl=Y1test.hat_dl, Y1.hat_gbm=Y1test.hat_gbm, Y1.hat_rf=Y1test.hat_rf)
-  Y0.hats = cbind(Y0.hat=Y0test.comb, Y0.hat_glm=Y0test.hat_glm, Y0.hat_dl=Y0test.hat_dl, Y0.hat_gbm=Y0test.hat_gbm, Y0.hat_rf=Y0test.hat_rf)
+  Z.hats = cbind(Z.hat=Ztest.comb, Ztest.hats)
+  Y1.hats = cbind(Y1.hat=Y1test.comb, Y1test.hats)
+  Y0.hats = cbind(Y0.hat=Y0test.comb, Y0test.hats)
 
   if (!crossFitting) {
-    ans <- list(glm.coef.ER=coefER_glm, coef.ER=coefER, glm.coef.OR=coefER_glm, coef.OR=coefOR,
+    ans <- list(coef.ER=coefER, coef.OR=coefOR,
                 Estimate=tau.est,
                 Z.hat = Ztest.comb,  Y1.hat = Y1test.comb, Y0.hat = Y0test.comb,
-                Z.hats_glm = data.frame(Ztest.hats_glm),
-                Z.hats = data.frame(Ztest.hats),
-                Y1.hats_glm = data.frame(Y1test.hats_glm), Y0.hats_glm = data.frame(Y0test.hats_glm),
-                Y1.hats = data.frame(Y1test.hats), Y0.hats = data.frame(Y0test.hats))
+                Z.hats = data.frame(Ztest.hats), Y1.hats = data.frame(Y1test.hats), Y0.hats = data.frame(Y0test.hats))
   } else {
     ans <- list(Estimate=tau.est)
   }
@@ -1035,6 +941,7 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 
   return(ans)
 }
+
 
 
 #' Doubly robust estimator
@@ -1060,15 +967,15 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hat,
 #'  Y1.hat=DRPRcomb.rslt$Y1.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 #'
-#' # with predictions from ensemble glm
-#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm,
-#'  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
+#' # with predictions from glm with fixed effects of clusters
+#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1,
+#'  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
 #'  data=twolevel_data)
 #'
-#' # with predictions from deep learning
-#' DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl,
-#'  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
-#'  data=twolevel_data)
+#' # with predictions from glm wtih random effects of clusters
+#  DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_3,
+#   Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_3, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_3,
+#   data=twolevel_data)
 #' }
 DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 
@@ -1120,15 +1027,15 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
 #'
-#' # with predictions from glm or ensemble glm
+#' # with predictions from glm
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm,
+#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
 #'  data=twolevel_data)
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm,
+#'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
 #'  data=twolevel_data)
 #'
 #' # with predictions from deep learning
