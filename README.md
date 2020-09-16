@@ -3,21 +3,15 @@
 
 # CURobustML
 
-<!-- badges: start -->
-
-[![Travis build
-status](https://travis-ci.com/youmisuk/CURobustML.svg?branch=master)](https://travis-ci.com/youmisuk/CURobustML)
-[![AppVeyor build
-status](https://ci.appveyor.com/api/projects/status/github/youmisuk/CURobustML?branch=master&svg=true)](https://ci.appveyor.com/project/youmisuk/CURobustML)
-<!-- badges: end -->
-
 A family of machine learning estimators for handling unmeasured
 cluster-level confounders in R. It provides a general approach to
 estimate causal effects in the presence of cluster-level unmeasured
 confounders in multilevel observational data. In particular, we leverage
 modern ML methods and exploit a fundamental nature regarding
 cluster-level unmeasured confounders to estimate the conditional average
-treatment effect (CATE) and the average treatment effect (ATE).
+treatment effect (CATE) and the average treatment effect (ATE). See Suk
+and Kang (2020) \<doi: <https://doi.org/10.31234/osf.io/t7vbz>\> for
+details.
 
 ## Installation
 
@@ -34,6 +28,7 @@ implement CURobustML.
 ``` r
 library(h2o)
 localH2O = h2o.init()
+h2o.removeAll() # clean slate - just in case the cluster was already running
 ```
 
 Or, use the setup function.
