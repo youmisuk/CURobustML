@@ -33,11 +33,11 @@
 #' @importFrom h2o as.h2o h2o.glm h2o.gbm h2o.deeplearning h2o.randomForest
 #'
 #' @examples
-#' \dontrun{
 #' # with two-level data
 #' DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
+#' \donttest{
 #' # with cross-classified data
 #' DRPRcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
 #'  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
@@ -366,11 +366,11 @@ DRPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #' @importFrom caret createFolds
 #' @importFrom h2o as.h2o h2o.glm h2o.gbm h2o.deeplearning h2o.randomForest
 #' @examples
-#' \dontrun{
 #' # with two-level data
 #' DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
+#' \donttest{
 #' # with cross-classified data
 #' DDcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
 #'  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
@@ -640,11 +640,11 @@ DDcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "deep
 #' @importFrom lme4 glmer lmer glmerControl lmerControl
 #' @importFrom h2o as.h2o h2o.glm h2o.gbm h2o.deeplearning h2o.randomForest
 #' @examples
-#' \dontrun{
 #' # with two-level data
 #' DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
+#' \donttest{
 #' # with cross-classified data
 #' DDPRcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
 #'  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
@@ -959,7 +959,6 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #'
 #' @importFrom stats  model.matrix coef vcov lm
 #' @examples
-#' \dontrun{
 #' DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
@@ -976,7 +975,6 @@ DDPRcomb <- function(Y, Z, X, interZ=formula(~1), ID, data, library=c("glm", "de
 #  DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_3,
 #   Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_3, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_3,
 #   data=twolevel_data)
-#' }
 DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 
   DRest.ind = (Z * (Y- Y1.hat) / Z.hat + Y1.hat) - ((1 -Z) * (Y - Y0.hat) / (1 - Z.hat) + Y0.hat)
@@ -1011,40 +1009,33 @@ DR <- function(Y, Z, interZ=formula(~1), Z.hat, Y1.hat, Y0.hat, data) {
 #' @importFrom stats ave model.matrix
 #' @importFrom AER ivreg
 #' @examples
-#' \dontrun{
 #' DDcomb.rslt <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
-#'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
-#' DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
-#'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
-#' DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
 #'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 #'
 #' # with final predictions
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDcomb.rslt$Z.hat, Y0.hat=DDcomb.rslt$Y0.hat, data=twolevel_data)
-#' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRPRcomb.rslt$Z.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
-#' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
-#'
 #' # with predictions from glm
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
 #'  data=twolevel_data)
-#' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
-#'  data=twolevel_data)
-#' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
-#'  data=twolevel_data)
-#'
 #' # with predictions from deep learning
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_dl,
 #'  data=twolevel_data)
+#'
+#' \donttest{
+#' DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+#'  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
+#'
+#' # with final predictions
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
-#'  Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_dl,
+#'  Z.hat=DDPRcomb.rslt$Z.hat, Y0.hat=DDPRcomb.rslt$Y0.hat, data=twolevel_data)
+#' # with predictions from glm
+#' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
+#'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
 #'  data=twolevel_data)
+#' # with predictions from deep learning
 #' DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
 #'  Z.hat=DDPRcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDPRcomb.rslt$Y0.hats$Y0test.hat_dl,
 #'  data=twolevel_data)
@@ -1139,9 +1130,7 @@ print.summary.CURobustML <-
 #'
 #' @importFrom h2o h2o.init h2o.removeAll h2o.no_progress
 #' @examples
-#' \dontrun{
 #' CURobustML.setup()
-#' }
 CURobustML.setup <- function(...) {
 
   localH2O = h2o.init(...)

@@ -13,7 +13,7 @@ Authors@R:
            role = "aut",
            email = "hyunseung@stat.wisc.edu",
 	   comment = c(ORCID = "https://orcid.org/0000-0001-5748-2707")))    
-Description: A family of machine learning estimators for handling cluster-level 
+Description: A family of machine learning (ML) estimators for handling cluster-level 
   unmeasured confounders in R. It provides a general approach to estimate causal effects
   in the presence of cluster-level unmeasured confounders in multilevel observational data.
   In particular, we leverage modern ML methods and exploit a fundamental nature regarding

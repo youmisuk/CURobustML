@@ -13,7 +13,5 @@ CURobustML.setup(...)
 setup function to implement CURobustML
 }
 \examples{
-\dontrun{
 CURobustML.setup()
-}
 }
