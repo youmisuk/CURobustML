@@ -54,11 +54,11 @@ An \code{DDPRcomb} with the following elements:
 Double demeaning estimator with proxy regressions with treatment and outcome learners
 }
 \examples{
+\dontrun{
 # with two-level data
 DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 
-\donttest{
 # with cross-classified data
 DDPRcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
