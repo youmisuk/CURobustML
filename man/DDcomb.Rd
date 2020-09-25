@@ -54,14 +54,23 @@ An \code{DDcomb} with the following elements:
 Double demeaning estimator with treatment and outcome learners
 }
 \examples{
-\dontrun{
-# with two-level data
-DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
- X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
+# two-level data
+DDcomb.rlst <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+ X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id,
+ library="glm", data=twolevel_data)
+summary(DDcomb.rlst)
 
-# with cross-classified data
-DDcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
+\donttest{
+# two-level data with default algorithms
+DDcomb.rlst2 <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+ X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id,
+ library=c("glm", "deeplearning"), data=twolevel_data)
+summary(DDcomb.rlst2)
+
+# cross-classified data with default algorithms
+DDcomb.rlst3 <- DDcomb(Y=crossclassified_data$Y, Z=crossclassified_data$Z, interZ=(~ W1),
  X=crossclassified_data[, c("X1", "X2", "X3", "W1", "Q1")], ID=crossclassified_data$f12id,
- data=crossclassified_data)
+ library=c("glm", "deeplearning"), data=crossclassified_data)
+summary(DDcomb.rlst3)
 }
 }

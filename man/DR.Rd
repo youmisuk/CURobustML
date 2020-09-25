@@ -28,22 +28,21 @@ estimates and standard errors
 Doubly robust estimator
 }
 \examples{
-\dontrun{
 DRPRcomb.rslt <- DRPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
- X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
+ X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id,
+ library="glm", data=twolevel_data) # the default algorithms are "glm" and "deeplearning".
 
 # with final predictions
 DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hat,
  Y1.hat=DRPRcomb.rslt$Y1.hat, Y0.hat=DRPRcomb.rslt$Y0.hat, data=twolevel_data)
 
 # with predictions from glm with fixed effects of clusters
-DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1,
- Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_1, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1,
- data=twolevel_data)
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+ Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_1, Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_1,
+ Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_1, data=twolevel_data)
 
 # with predictions from glm wtih random effects of clusters
- DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_3,
-  Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_3, Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_3,
-  data=twolevel_data)
-}
+DR(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
+ Z.hat=DRPRcomb.rslt$Z.hats$Ztest.hat_glm_3, Y1.hat=DRPRcomb.rslt$Y1.hats$Y1test.hat_glm_3,
+ Y0.hat=DRPRcomb.rslt$Y0.hats$Y0test.hat_glm_3, data=twolevel_data)
 }

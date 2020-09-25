@@ -28,22 +28,15 @@ estimates and standard errors
 Double demeaning estimator
 }
 \examples{
-\dontrun{
 DDcomb.rslt <- DDcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
- X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
+ X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id,
+ library="glm", data=twolevel_data) # the default algorithms are "glm" and "deeplearning".
 
 # with final predictions
 DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
  Z.hat=DDcomb.rslt$Z.hat, Y0.hat=DDcomb.rslt$Y0.hat, data=twolevel_data)
-# with predictions from glm
-DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_glm, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_glm,
- data=twolevel_data)
-# with predictions from deep learning
-DD(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1), ID=twolevel_data$id,
- Z.hat=DDcomb.rslt$Z.hats$Ztest.hat_dl, Y0.hat=DDcomb.rslt$Y0.hats$Y0test.hat_dl,
- data=twolevel_data)
 
+\donttest{
 DDPRcomb.rslt <- DDPRcomb(Y=twolevel_data$Y, Z=twolevel_data$Z, interZ=(~ W1),
  X=twolevel_data[, c("X1", "X2", "X3", "W1")], ID=twolevel_data$id, data=twolevel_data)
 
