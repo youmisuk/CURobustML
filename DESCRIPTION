@@ -1,6 +1,6 @@
 Package: CURobustML
 Type: Package
-Title: Machine Learning Estimators for Handling Cluster-Level Unmeasured Confounders
+Title: Robust Machine Learning Under Cluster-Level Unmeasured Confounding
 Version: 0.1.0
 Authors@R: 
     c(person(given = "Youmi",
@@ -19,7 +19,7 @@ Description: A family of machine learning (ML) estimators for handling cluster-l
   In particular, we leverage modern ML methods and exploit a fundamental nature regarding
   cluster-level unmeasured confounders to estimate the conditional average treatment effect
   (CATE) and the average treatment effect (ATE). 
-  See Suk and Kang (2020) <doi: 10.31234/osf.io/t7vbz> for details.
+  See Suk and Kang (2020) <doi:10.31234/osf.io/t7vbz> for details.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
