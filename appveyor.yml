@@ -13,8 +13,6 @@ install:
 cache:
   - C:\RLibrary
 
-before_script: chmod 0555 ./node_modules/.bin/travis
-
 environment:
   global:
     R_REMOTES_STANDALONE: true

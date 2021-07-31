@@ -27,11 +27,13 @@ You can also evaluate the proposed estimators in Shiny app,
 
 ## Installation
 
-You can install the released version of CURobustML from
-[CRAN](https://CRAN.R-project.org) with:
+You can install the most recent version of CURobustML from GitHub with:
 
 ``` r
-install.packages("CURobustML")
+install.packages("devtools")
+library(devtools)
+
+install_github("youmisuk/CURobustML")
 ```
 
 You should also start and connect to H2O instance via package h2o to
