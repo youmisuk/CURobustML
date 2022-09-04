@@ -19,7 +19,7 @@ modern ML methods and exploit a fundamental nature regarding
 cluster-level unmeasured confounders to estimate the conditional average
 treatment effect (CATE) and the average treatment effect (ATE). See Suk
 and Kang (2020)
-\<[doi:10.31234/osf.io/t7vbz](https://doi.org/10.31234/osf.io/t7vbz)\>
+\<[doi:10.31234/osf.io/t7vbz](https://doi.org/10.1007/s11336-021-09805-x)\>
 for details.
 
 You can also evaluate the proposed estimators in Shiny app,
